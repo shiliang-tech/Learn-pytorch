@@ -1,0 +1,110 @@
+# 第 08 课：nn.Module 版线性回归
+
+> 这份文档是本节的详细教程和速查表。先读它，再去写 `lesson` 文件；卡住时回来查，不要急着打开答案。
+
+## 学习路径
+
+| 步骤 | 你要做什么 | 目的 |
+| --- | --- | --- |
+| 1 | 读完本页的“核心概念”和“关键写法” | 先理解整体思路，知道 API 在解决什么问题 |
+| 2 | 打开 `../lessons/lesson_08_nn_linear_regression.py` 补全 TODO | 把概念变成能运行的代码 |
+| 3 | 运行练习文件，观察输出 | 用 shape、loss、accuracy 判断代码是否合理 |
+| 4 | 最后对照 `../answers/answer_08_nn_linear_regression.py` | 查漏补缺，而不是直接抄答案 |
+
+## 核心概念
+
+- nn.Module 是 PyTorch 组织模型参数和前向计算的标准方式。
+- nn.Linear(in_features, out_features) 实现 y=xW^T+b。
+- optimizer 负责根据梯度更新参数，常见有 SGD、Adam。
+
+## 理解思路
+
+写 PyTorch 代码时，先不要把注意力放在“背 API”上，而是先问四个问题：
+
+1. 数据是什么形状？例如 `[batch, features]`、`[batch, time, features]` 或 `[N, C, H, W]`。
+2. 标签是什么类型？回归通常是浮点，分类通常是整数类别编号或 0/1 浮点标签。
+3. 模型输入和输出应该是什么 shape？loss 函数会严格要求它们匹配。
+4. 哪些张量需要梯度，哪些只是数据或指标？不要让日志、评估和保存逻辑干扰计算图。
+
+本节涉及模型时，优先把模型看成一个 shape 转换器：输入张量进来，经过若干层，输出 logits、预测值或重建结果。
+
+本节涉及训练时，请把训练循环固定成一个习惯：前向计算 -> 计算损失 -> 清空梯度 -> 反向传播 -> 更新参数 -> 记录指标。
+
+## 关键写法速查
+
+| 写法 | 什么时候用 |
+| --- | --- |
+| `from torch import nn`<br>`nn.Module`<br>`nn.Linear` | `from torch import nn` 后，可以用 `nn.Module`、`nn.Linear`、各种 loss 和层。 |
+| `nn.Linear(in_features, out_features)`<br>`[batch, in_features]`<br>`[batch, out_features]` | `nn.Linear(in_features, out_features)` 输入 shape 是 `[batch, in_features]`，输出是 `[batch, out_features]`。 |
+| `model.parameters()` | `model.parameters()` 会返回模型里需要优化的参数，直接交给 optimizer。 |
+| `nn.MSELoss()` | `nn.MSELoss()` 适合回归，预测和标签 shape 通常要一致。 |
+| `torch.optim.SGD(model.parameters(), lr=...)` | `torch.optim.SGD(model.parameters(), lr=...)` 是最基础优化器；Adam 通常更省调参。 |
+| `opt.zero_grad(); loss.backward(); opt.step()` | 标准顺序是 `opt.zero_grad(); loss.backward(); opt.step()`。 |
+| `model.weight`<br>`model.bias` | `model.weight` 和 `model.bias` 可以查看 Linear 的参数。 |
+| `nn.Sequential(...)`<br>`nn.Module` | 用 `nn.Sequential(...)` 可以快速堆简单模型；复杂模型建议自定义 `nn.Module`。 |
+| `print(model)` | 训练前可用 `print(model)` 查看模型结构。 |
+| 概念 / 经验 | 回归输出层一般不加 sigmoid/softmax，直接输出连续值。 |
+
+## 练习前代码骨架
+
+下面不是答案，只是提醒你代码应该从哪里开始。真正实现请写在 lesson 文件里。
+
+```python
+def main():
+    # TODO: 使用 nn.Linear、MSELoss、SGD 完成训练。
+    pass
+
+
+if __name__ == "__main__":
+    main()
+```
+
+训练类题目可以把下面这段顺序刻进手里：
+
+```python
+pred_or_logits = model(x)
+loss = loss_fn(pred_or_logits, y)
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()
+```
+
+## 写题步骤
+
+1. 先把本节会用到的 import、张量 shape、loss 或模型层写出来。
+2. 每完成一步就打印一次关键变量，特别是 `shape`、`dtype`、`device`。
+3. 如果是训练任务，先让代码跑通，再观察 loss 是否下降、accuracy 是否合理。
+4. 不确定 API 怎么用时，优先回到本页的关键写法，不要急着看答案。
+
+## 常见排错表
+
+| 现象 | 优先检查 |
+| --- | --- |
+| shape 报错 | 打印参与运算的所有张量 shape，按维度逐个对齐 |
+| dtype 报错 | 分类标签通常要 `torch.long`，回归值和模型输入通常要浮点 |
+| device 报错 | 模型、输入、标签必须在同一个 device |
+| loss 不下降 | 检查是否执行了 `zero_grad()`、`backward()`、`step()`，学习率是否过大或过小 |
+| 指标奇怪 | 确认标签含义、输出 shape、阈值或 `argmax(dim=...)` 是否写对 |
+| 模型输出不符合预期 | 在 forward 中逐层打印 shape，确认 Linear 或 Conv 的输入维度 |
+| 训练越来越差 | 先降低学习率，再检查标签、loss 函数和模型输出是否匹配 |
+
+## 本节任务
+
+- 用 nn.Linear(1, 1) 拟合 y=-3x+0.5。
+- 使用 MSELoss 和 SGD。
+- 训练结束后打印 weight、bias 和 loss。
+
+## 完成标准
+
+- 练习文件能直接运行，没有异常。
+- 你能说清楚每个关键张量的 shape。
+- 你能解释为什么使用这个 loss、这个 dtype、这个输出维度。
+- 训练任务的 loss 或指标有合理变化，而不是完全随机。
+- 看答案后，能关掉答案再独立复写一遍。
+
+## 文件位置
+
+- 练习文件：`../lessons/lesson_08_nn_linear_regression.py`
+- 答案文件：`../answers/answer_08_nn_linear_regression.py`
+
+建议先独立完成练习文件，再打开答案对照。能不看答案复写一遍，才算真的吃下来了。
