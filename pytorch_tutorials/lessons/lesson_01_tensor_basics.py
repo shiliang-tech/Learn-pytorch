@@ -35,9 +35,6 @@
 # - 打印关键 shape、loss 或 accuracy，确认自己真的跑通了。
 #
 # ===== 练习区：从这里开始写代码 =====
-import torch
-
-
 def main():
     # TODO: 创建 x 和 w，然后完成矩阵乘法。
     pass

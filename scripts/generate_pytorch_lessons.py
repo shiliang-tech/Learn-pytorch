@@ -1161,122 +1161,90 @@ def split_hint_for_table(item):
     return "概念 / 经验", item
 
 
+def hint_heading(item):
+    code_spans = re.findall(r"`[^`]+`", item)
+    if code_spans:
+        first = code_spans[0].strip("`")
+        if first.startswith("["):
+            return "形状约定"
+        if " / " in first or "/" in first:
+            return "公式写法"
+        if len(first) > 48:
+            return "常用写法"
+        return first
+    return "概念和经验"
+
+
+def hint_code_lines(item):
+    code_spans = [code.strip("`") for code in re.findall(r"`[^`]+`", item)]
+    seen = []
+    for code in code_spans:
+        if code not in seen:
+            seen.append(code)
+    return seen
+
+
+def hint_extra_notes(item):
+    notes = []
+    lower = item.lower()
+    if "shape" in lower or "[" in item:
+        notes.append("写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。")
+    if "dtype" in lower or "float" in lower or "long" in lower:
+        notes.append("同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。")
+    if "device" in lower or "cuda" in lower or "cpu" in lower:
+        notes.append("如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。")
+    if "loss" in lower or "backward" in lower or "optimizer" in lower or "step()" in lower or "opt.step" in lower:
+        notes.append("训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。")
+    if "linear" in lower or "conv" in lower or "rnn" in lower or "lstm" in lower or "transformer" in lower:
+        notes.append("涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。")
+    if "softmax" in lower or "sigmoid" in lower or "logit" in lower or "crossentropy" in lower or "bce" in lower:
+        notes.append("分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。")
+    if "grad" in lower or "requires_grad" in lower or "detach" in lower:
+        notes.append("和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。")
+    if "dataset" in lower or "dataloader" in lower or "batch" in lower:
+        notes.append("数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。")
+    return notes
+
+
 def tutorial_text(index, lesson):
-    lesson_name = f"lesson_{index:02d}_{lesson['slug']}.py"
-    answer_name = f"answer_{index:02d}_{lesson['slug']}.py"
     hints = API_HINTS.get(lesson["slug"], [])
-    is_training = "backward" in lesson["answer"] or "optimizer" in lesson["answer"] or "opt.step" in lesson["answer"]
-    uses_model = "nn." in lesson["answer"] or "Module" in lesson["answer"]
 
     lines = []
     lines.append(f"# 第 {index:02d} 课：{lesson['title']}")
     lines.append("")
-    lines.append("> 这份文档是本节的详细教程和速查表。先读它，再去写 `lesson` 文件；卡住时回来查，不要急着打开答案。")
-    lines.append("")
-    lines.append("## 学习路径")
-    lines.append("")
-    lines.append("| 步骤 | 你要做什么 | 目的 |")
-    lines.append("| --- | --- | --- |")
-    lines.append("| 1 | 读完本页的“核心概念”和“关键写法” | 先理解整体思路，知道 API 在解决什么问题 |")
-    lines.append(f"| 2 | 打开 `../lessons/{lesson_name}` 补全 TODO | 把概念变成能运行的代码 |")
-    lines.append(f"| 3 | 运行练习文件，观察输出 | 用 shape、loss、accuracy 判断代码是否合理 |")
-    lines.append(f"| 4 | 最后对照 `../answers/{answer_name}` | 查漏补缺，而不是直接抄答案 |")
+    lines.append("> 这一页只讲本节知识点和常用写法。练习题在 `lessons` 目录，答案在 `answers` 目录。")
     lines.append("")
     lines.append("## 核心概念")
     lines.append("")
     for item in lesson["principles"]:
         lines.append(f"- {item}")
     lines.append("")
-    lines.append("## 理解思路")
-    lines.append("")
-    lines.append("写 PyTorch 代码时，先不要把注意力放在“背 API”上，而是先问四个问题：")
-    lines.append("")
-    lines.append("1. 数据是什么形状？例如 `[batch, features]`、`[batch, time, features]` 或 `[N, C, H, W]`。")
-    lines.append("2. 标签是什么类型？回归通常是浮点，分类通常是整数类别编号或 0/1 浮点标签。")
-    lines.append("3. 模型输入和输出应该是什么 shape？loss 函数会严格要求它们匹配。")
-    lines.append("4. 哪些张量需要梯度，哪些只是数据或指标？不要让日志、评估和保存逻辑干扰计算图。")
-    lines.append("")
-    if uses_model:
-        lines.append("本节涉及模型时，优先把模型看成一个 shape 转换器：输入张量进来，经过若干层，输出 logits、预测值或重建结果。")
-        lines.append("")
-    if is_training:
-        lines.append("本节涉及训练时，请把训练循环固定成一个习惯：前向计算 -> 计算损失 -> 清空梯度 -> 反向传播 -> 更新参数 -> 记录指标。")
-        lines.append("")
-    lines.append("## 关键写法速查")
+    lines.append("## 关键写法详解")
     lines.append("")
     if hints:
-        lines.append("| 写法 | 什么时候用 |")
-        lines.append("| --- | --- |")
-        for item in hints:
-            left, right = split_hint_for_table(item)
-            left = left.replace("|", "\\|")
-            right = right.replace("|", "\\|")
-            lines.append(f"| {left} | {right} |")
+        for i, item in enumerate(hints, start=1):
+            lines.append(f"### {i}. {hint_heading(item)}")
+            lines.append("")
+            code_lines = hint_code_lines(item)
+            if code_lines:
+                lines.append("```python")
+                for code in code_lines:
+                    lines.append(code)
+                lines.append("```")
+                lines.append("")
+            lines.append("说明：")
+            lines.append("")
+            lines.append(item)
+            for note in hint_extra_notes(item):
+                lines.append(f"- {note}")
+            lines.append("")
     else:
         lines.append("- 本节暂无额外 API 清单，先按 lesson 文件里的操作路线完成练习。")
-    lines.append("")
-    lines.append("## 练习前代码骨架")
-    lines.append("")
-    lines.append("下面不是答案，只是提醒你代码应该从哪里开始。真正实现请写在 lesson 文件里。")
-    lines.append("")
-    lines.append("```python")
-    lines.append(lesson["starter"].rstrip())
-    lines.append("```")
-    lines.append("")
-    if is_training:
-        lines.append("训练类题目可以把下面这段顺序刻进手里：")
-        lines.append("")
-        lines.append("```python")
-        lines.append("pred_or_logits = model(x)")
-        lines.append("loss = loss_fn(pred_or_logits, y)")
-        lines.append("optimizer.zero_grad()")
-        lines.append("loss.backward()")
-        lines.append("optimizer.step()")
-        lines.append("```")
-        lines.append("")
-    lines.append("## 写题步骤")
-    lines.append("")
-    lines.append("1. 先把本节会用到的 import、张量 shape、loss 或模型层写出来。")
-    lines.append("2. 每完成一步就打印一次关键变量，特别是 `shape`、`dtype`、`device`。")
-    lines.append("3. 如果是训练任务，先让代码跑通，再观察 loss 是否下降、accuracy 是否合理。")
-    lines.append("4. 不确定 API 怎么用时，优先回到本页的关键写法，不要急着看答案。")
-    lines.append("")
-    lines.append("## 常见排错表")
-    lines.append("")
-    lines.append("| 现象 | 优先检查 |")
-    lines.append("| --- | --- |")
-    lines.append("| shape 报错 | 打印参与运算的所有张量 shape，按维度逐个对齐 |")
-    lines.append("| dtype 报错 | 分类标签通常要 `torch.long`，回归值和模型输入通常要浮点 |")
-    lines.append("| device 报错 | 模型、输入、标签必须在同一个 device |")
-    lines.append("| loss 不下降 | 检查是否执行了 `zero_grad()`、`backward()`、`step()`，学习率是否过大或过小 |")
-    lines.append("| 指标奇怪 | 确认标签含义、输出 shape、阈值或 `argmax(dim=...)` 是否写对 |")
-    if uses_model:
-        lines.append("| 模型输出不符合预期 | 在 forward 中逐层打印 shape，确认 Linear 或 Conv 的输入维度 |")
-    if is_training:
-        lines.append("| 训练越来越差 | 先降低学习率，再检查标签、loss 函数和模型输出是否匹配 |")
     lines.append("")
     lines.append("## 本节任务")
     lines.append("")
     for item in lesson["tasks"]:
         lines.append(f"- {item}")
-    lines.append("")
-    lines.append("## 完成标准")
-    lines.append("")
-    lines.append("- 练习文件能直接运行，没有异常。")
-    lines.append("- 你能说清楚每个关键张量的 shape。")
-    if is_training:
-        lines.append("- 你能解释为什么使用这个 loss、这个 dtype、这个输出维度。")
-        lines.append("- 训练任务的 loss 或指标有合理变化，而不是完全随机。")
-    else:
-        lines.append("- 你能解释为什么使用这些 API，以及为什么要打印这些检查项。")
-    lines.append("- 看答案后，能关掉答案再独立复写一遍。")
-    lines.append("")
-    lines.append("## 文件位置")
-    lines.append("")
-    lines.append(f"- 练习文件：`../lessons/{lesson_name}`")
-    lines.append(f"- 答案文件：`../answers/{answer_name}`")
-    lines.append("")
-    lines.append("建议先独立完成练习文件，再打开答案对照。能不看答案复写一遍，才算真的吃下来了。")
     lines.append("")
     return "\n".join(lines)
 
