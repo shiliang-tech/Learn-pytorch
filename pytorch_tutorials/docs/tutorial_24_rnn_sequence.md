@@ -20,9 +20,6 @@ nn.RNN(input_size, hidden_size, batch_first=True)
 说明：
 
 `nn.RNN(input_size, hidden_size, batch_first=True)` 接收 `[batch, time, features]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 2. (out, h_n)
 
@@ -35,7 +32,6 @@ h_n
 说明：
 
 RNN 返回 `(out, h_n)`；`out` 是每个时间步输出，`h_n` 是最后隐藏状态。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 3. out[:, -1, :]
 
@@ -47,7 +43,6 @@ h_n[-1]
 说明：
 
 序列分类常用 `out[:, -1, :]` 或 `h_n[-1]` 作为整体表示。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 4. 形状约定
 
@@ -58,8 +53,6 @@ h_n[-1]
 说明：
 
 输入一维数值序列时，features 维也要保留，例如 `[batch, time, 1]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 5. hidden_size
 
@@ -70,14 +63,12 @@ hidden_size
 说明：
 
 `hidden_size` 决定隐藏状态维度，也是分类头 Linear 的输入维度。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 6. 概念和经验
 
 说明：
 
 普通 RNN 容易梯度消失，长序列更常用 LSTM/GRU/Transformer。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 7. pack_padded_sequence
 
@@ -94,8 +85,6 @@ pack_padded_sequence
 说明：
 
 RNN 训练也使用普通的 optimizer/loss/backward/step。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 9. 形状约定
 
@@ -106,8 +95,6 @@ RNN 训练也使用普通的 optimizer/loss/backward/step。
 说明：
 
 序列任务排错重点是 `[batch, time, features]` 维度顺序。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 10. batch_first=False
 
@@ -119,8 +106,6 @@ batch_first=False
 说明：
 
 如果 `batch_first=False`，输入顺序会变成 `[time, batch, features]`，初学建议设 True。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 
 ## 本节任务

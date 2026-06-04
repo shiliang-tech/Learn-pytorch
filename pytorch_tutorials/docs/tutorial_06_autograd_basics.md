@@ -19,7 +19,6 @@ x = torch.tensor(1.0, requires_grad=True)
 说明：
 
 `x = torch.tensor(1.0, requires_grad=True)` 会让 PyTorch 记录 x 参与的计算。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 2. requires_grad=True
 
@@ -30,7 +29,6 @@ requires_grad=True
 说明：
 
 只有浮点或复数张量能 `requires_grad=True`，整数标签不能求梯度。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 3. loss.backward()
 
@@ -42,8 +40,6 @@ gradient
 说明：
 
 `loss.backward()` 要求 loss 通常是标量；非标量需要传入 `gradient` 参数。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 4. .grad
 
@@ -55,7 +51,6 @@ w.grad
 说明：
 
 叶子张量的梯度保存在 `.grad`，例如 `w.grad`。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 5. 概念和经验
 
@@ -72,7 +67,6 @@ with torch.no_grad():
 说明：
 
 `with torch.no_grad():` 里面的计算不会被 autograd 记录，常用于手动更新参数和推理。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 7. x.detach()
 
@@ -83,7 +77,6 @@ x.detach()
 说明：
 
 `x.detach()` 得到一个不再连接当前计算图的新张量，常用于停止梯度传播。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 8. loss.item()
 
@@ -95,7 +88,6 @@ loss.item()
 说明：
 
 `loss.item()` 只用于日志，不要用 `.item()` 后的 Python 数字继续参与反向传播。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 9. element 0 of tensors does not require grad
 
@@ -106,8 +98,6 @@ element 0 of tensors does not require grad
 说明：
 
 如果看到 `element 0 of tensors does not require grad`，说明 loss 和可训练参数之间的计算图断了。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 10. _
 

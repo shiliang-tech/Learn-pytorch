@@ -19,10 +19,6 @@
 说明：
 
 二分类可输出一个 logit，shape `[batch, 1]`，标签也整理成 `[batch, 1]` 的 float。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 2. nn.BCEWithLogitsLoss()
 
@@ -33,8 +29,6 @@ nn.BCEWithLogitsLoss()
 说明：
 
 `nn.BCEWithLogitsLoss()` 内部已经包含 sigmoid，训练时不要手动 sigmoid。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 3. probs = torch.sigmoid(logits)
 
@@ -45,7 +39,6 @@ probs = torch.sigmoid(logits)
 说明：
 
 推理阶段用 `probs = torch.sigmoid(logits)` 得到正类概率。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 4. pred = probs > 0.5
 
@@ -66,7 +59,6 @@ pred = probs > 0.5
 说明：
 
 标签要是 0/1 浮点数；如果是 bool 或 long，通常用 `.float()` 转换。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
 
 ### 6. ((pred == y.bool()).float().mean())
 
@@ -77,7 +69,6 @@ pred = probs > 0.5
 说明：
 
 准确率可写成 `((pred == y.bool()).float().mean())`。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
 
 ### 7. CrossEntropyLoss
 
@@ -88,9 +79,6 @@ CrossEntropyLoss
 说明：
 
 如果输出两个 logits，也可以把二分类当多分类，用 `CrossEntropyLoss` 和 long 标签。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 8. 概念和经验
 
@@ -107,15 +95,12 @@ pos_weight
 说明：
 
 `pos_weight` 参数可以让 BCEWithLogitsLoss 更重视正类，适合正负样本不均衡。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 10. 概念和经验
 
 说明：
 
 logits 不是概率，可以小于 0 或大于 1；只有 sigmoid 后才是 0 到 1。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 
 ## 本节任务

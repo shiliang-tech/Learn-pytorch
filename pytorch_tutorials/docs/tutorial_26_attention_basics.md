@@ -50,7 +50,6 @@ weights = torch.softmax(scores, dim=-1)
 说明：
 
 `weights = torch.softmax(scores, dim=-1)` 得到注意力权重。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 5. output = weights @ v
 
@@ -71,8 +70,6 @@ output = weights @ v
 说明：
 
 输入可为 `[batch, seq, dim]`，输出通常也是 `[batch, seq, dim]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 7. -1e9
 
@@ -83,7 +80,6 @@ output = weights @ v
 说明：
 
 mask 可在 softmax 前把不可见位置填成很小的数，如 `-1e9`。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 8. 概念和经验
 

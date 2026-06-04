@@ -20,8 +20,6 @@ nn.BatchNorm1d(num_features)
 说明：
 
 `nn.BatchNorm1d(num_features)` 常用于 MLP 的 `[batch, features]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 2. nn.BatchNorm2d(num_channels)
 
@@ -33,22 +31,18 @@ nn.BatchNorm2d(num_channels)
 说明：
 
 `nn.BatchNorm2d(num_channels)` 常用于 CNN 的 `[N, C, H, W]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 3. 概念和经验
 
 说明：
 
 BatchNorm 训练时用当前 batch 统计，同时更新 running_mean/running_var。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 4. 概念和经验
 
 说明：
 
 BatchNorm eval 时使用 running_mean/running_var，不再用当前 batch 统计。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 5. 概念和经验
 
@@ -72,15 +66,12 @@ model.eval()
 说明：
 
 小 batch 下 BatchNorm 统计可能不稳定，可考虑 LayerNorm 或 GroupNorm。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 8. 概念和经验
 
 说明：
 
 BatchNorm 一般放在 Linear/Conv 后、激活函数前或后，具体结构可按常见架构习惯。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 9. 概念和经验
 

@@ -19,8 +19,6 @@ nn.LSTM(input_size, hidden_size, batch_first=True)
 说明：
 
 `nn.LSTM(input_size, hidden_size, batch_first=True)` 是门控循环网络。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 2. (out, (h_n, c_n))
 
@@ -31,7 +29,6 @@ nn.LSTM(input_size, hidden_size, batch_first=True)
 说明：
 
 LSTM 返回 `(out, (h_n, c_n))`，其中 c_n 是 cell state。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 3. out[:, -1, :]
 
@@ -43,8 +40,6 @@ nn.Linear(hidden_size, output_size)
 说明：
 
 预测下一步常取 `out[:, -1, :]` 接 `nn.Linear(hidden_size, output_size)`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 4. x[i:i+window]
 
@@ -56,7 +51,6 @@ x[i+window]
 说明：
 
 滑动窗口构造：`x[i:i+window]` 作为输入，`x[i+window]` 作为标签。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 5. 形状约定
 
@@ -67,7 +61,6 @@ x[i+window]
 说明：
 
 时间序列输入 shape 常是 `[samples, window, features]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 6. 形状约定
 
@@ -78,7 +71,6 @@ x[i+window]
 说明：
 
 回归标签 shape 要和模型输出一致，例如 `[samples, 1]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 7. nn.MSELoss()
 
@@ -90,7 +82,6 @@ nn.L1Loss()
 说明：
 
 损失常用 `nn.MSELoss()` 或 `nn.L1Loss()`。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 8. 概念和经验
 
@@ -109,7 +100,6 @@ nn.L1Loss()
 说明：
 
 LSTM 也可能梯度爆炸，必要时配合梯度裁剪。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 
 ## 本节任务

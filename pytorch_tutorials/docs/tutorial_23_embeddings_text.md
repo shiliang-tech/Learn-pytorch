@@ -29,7 +29,6 @@ torch.long
 说明：
 
 Embedding 输入必须是整数张量，dtype 通常是 `torch.long`。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
 
 ### 3. 形状约定
 
@@ -41,8 +40,6 @@ Embedding 输入必须是整数张量，dtype 通常是 `torch.long`。
 说明：
 
 输入 shape `[batch, seq_len]` 经过 Embedding 后变成 `[batch, seq_len, dim]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 4. emb.mean(dim=1)
 
@@ -79,7 +76,6 @@ Embedding -> pooling -> Linear
 说明：
 
 文本分类头常写成 `Embedding -> pooling -> Linear`。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 8. 概念和经验
 

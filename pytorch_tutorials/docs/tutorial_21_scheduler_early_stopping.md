@@ -19,7 +19,6 @@ StepLR(optimizer, step_size=20, gamma=0.5)
 说明：
 
 `StepLR(optimizer, step_size=20, gamma=0.5)` 每 20 轮把学习率乘 0.5。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 2. scheduler.step()
 
@@ -30,7 +29,6 @@ scheduler.step()
 说明：
 
 常见调用位置是每个 epoch 训练结束后 `scheduler.step()`。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 3. scheduler.get_last_lr()
 
@@ -52,7 +50,6 @@ best_val_acc
 说明：
 
 早停需要记录 `best_val_loss` 或 `best_val_acc`。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 5. bad_epochs = 0
 
@@ -90,7 +87,6 @@ patience
 说明：
 
 val loss 适合早停，val accuracy 也可以，但 accuracy 可能更抖。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 9. 概念和经验
 

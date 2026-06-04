@@ -87,7 +87,6 @@ f1 = 2 * precision * recall / (precision + recall)
 说明：
 
 多分类混淆矩阵可以建立 `[num_classes, num_classes]` 的计数矩阵。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 9. torch.no_grad()
 
@@ -99,7 +98,6 @@ model.eval()
 说明：
 
 指标计算通常放在 `torch.no_grad()` 和 `model.eval()` 下。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 10. 概念和经验
 

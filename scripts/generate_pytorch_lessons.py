@@ -1235,8 +1235,6 @@ def tutorial_text(index, lesson):
             lines.append("说明：")
             lines.append("")
             lines.append(item)
-            for note in hint_extra_notes(item):
-                lines.append(f"- {note}")
             lines.append("")
     else:
         lines.append("- 本节暂无额外 API 清单，先按 lesson 文件里的操作路线完成练习。")

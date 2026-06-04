@@ -48,7 +48,6 @@ GELU
 说明：
 
 没有激活函数的多层 Linear 仍等价于一个 Linear，表达能力有限。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 5. nn.init.kaiming_normal_(layer.weight)
 
@@ -69,7 +68,6 @@ nn.init.xavier_uniform_(layer.weight)
 说明：
 
 `nn.init.xavier_uniform_(layer.weight)` 常配合 Tanh/Sigmoid 或一般全连接网络。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 7. nn.init.zeros_(layer.bias)
 
@@ -91,7 +89,6 @@ isinstance(layer, nn.Linear)
 说明：
 
 遍历模块可用 `for layer in model.modules():`，再用 `isinstance(layer, nn.Linear)` 筛选。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 9. 概念和经验
 

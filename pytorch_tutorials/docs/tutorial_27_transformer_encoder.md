@@ -19,8 +19,6 @@ nn.TransformerEncoderLayer(d_model, nhead, batch_first=True)
 说明：
 
 `nn.TransformerEncoderLayer(d_model, nhead, batch_first=True)` 创建一个 encoder 层。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 2. nn.TransformerEncoder(layer, num_layers=...)
 
@@ -31,7 +29,6 @@ nn.TransformerEncoder(layer, num_layers=...)
 说明：
 
 `nn.TransformerEncoder(layer, num_layers=...)` 堆叠多个 encoder 层。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 3. nn.Embedding
 
@@ -43,16 +40,12 @@ nn.Embedding
 说明：
 
 输入到 Transformer 前通常先经过 `nn.Embedding`，shape `[batch, seq] -> [batch, seq, dim]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 4. 概念和经验
 
 说明：
 
 Transformer 本身不知道顺序，需要加位置编码或可学习位置参数。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 5. d_model
 
@@ -86,15 +79,12 @@ padding 序列时要传 `src_key_padding_mask`，避免模型关注 padding。
 说明：
 
 Transformer 输出 shape 和输入 embedding shape 通常一致。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 9. 概念和经验
 
 说明：
 
 小数据上 Transformer 不一定比 MLP/RNN 好，先理解机制更重要。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 10. 概念和经验
 

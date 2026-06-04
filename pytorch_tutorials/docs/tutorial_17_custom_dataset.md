@@ -19,7 +19,6 @@ torch.utils.data.Dataset
 说明：
 
 自定义 Dataset 继承 `torch.utils.data.Dataset`。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 2. __len__(self)
 
@@ -30,7 +29,6 @@ __len__(self)
 说明：
 
 `__len__(self)` 返回样本数，DataLoader 依赖它判断一轮有多少数据。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 3. __getitem__(self, idx)
 
@@ -70,14 +68,12 @@ collate_fn
 说明：
 
 `DataLoader` 会把多个样本自动 collate 成 batch；形状不一致时需要自定义 `collate_fn`。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 7. 概念和经验
 
 说明：
 
 回归标签通常是 float，分类标签通常是 long。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
 
 ### 8. __getitem__
 
@@ -88,14 +84,12 @@ __getitem__
 说明：
 
 数据增强常放在 Dataset 的 `__getitem__` 中。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 9. 概念和经验
 
 说明：
 
 Dataset 不负责训练，只负责稳定地提供样本。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 10. loader = DataLoader(dataset, batch_size=4)
 
@@ -106,8 +100,6 @@ loader = DataLoader(dataset, batch_size=4)
 说明：
 
 先用小数据和 `loader = DataLoader(dataset, batch_size=4)` 打印一个 batch，确认 shape。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 
 ## 本节任务

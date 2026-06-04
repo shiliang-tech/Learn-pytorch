@@ -47,15 +47,12 @@ nn.MSELoss()
 说明：
 
 连续值重建常用 `nn.MSELoss()`；0-1 图像也可考虑 BCE 类损失。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 5. 概念和经验
 
 说明：
 
 decoder 最后一层是否加激活取决于数据范围，例如 0-1 可加 Sigmoid。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 6. 概念和经验
 

@@ -19,7 +19,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 说明：
 
 统一写 `device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')`。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 ### 2. model.to(device)
 
@@ -30,7 +29,6 @@ model.to(device)
 说明：
 
 模型创建后调用 `model.to(device)`。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 ### 3. xb = xb.to(device); yb = yb.to(device)
 
@@ -41,8 +39,6 @@ xb = xb.to(device); yb = yb.to(device)
 说明：
 
 每个 batch 进入模型前调用 `xb = xb.to(device); yb = yb.to(device)`。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 4. torch.zeros_like(x)
 
@@ -54,7 +50,6 @@ device=device
 说明：
 
 新创建的临时张量也要注意 device，可用 `torch.zeros_like(x)` 或指定 `device=device`。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 ### 5. .cuda()
 
@@ -65,7 +60,6 @@ device=device
 说明：
 
 不要在通用代码里硬写 `.cuda()`，没有 GPU 的机器会直接失败。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 ### 6. loss.item()
 
@@ -76,9 +70,6 @@ loss.item()
 说明：
 
 日志里的 loss 可用 `loss.item()`，不用把整个模型或 batch 搬回 CPU。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 7. x.detach().cpu().numpy()
 
@@ -89,8 +80,6 @@ x.detach().cpu().numpy()
 说明：
 
 转 NumPy 前必须在 CPU 上：`x.detach().cpu().numpy()`。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 8. map_location
 
@@ -101,7 +90,6 @@ map_location
 说明：
 
 保存 state_dict 时不需要特别处理 device；加载时可用 `map_location` 控制。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 ### 9. tensor.device
 
@@ -112,14 +100,12 @@ tensor.device
 说明：
 
 device mismatch 错误几乎都能通过打印 `tensor.device` 定位。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 ### 10. 概念和经验
 
 说明：
 
 多 GPU、分布式训练是更高阶主题，单机入门先把单 device 写规范。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 
 ## 本节任务

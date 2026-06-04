@@ -20,7 +20,6 @@ optimizer.step()
 说明：
 
 训练集用于 `backward` 和 `optimizer.step()`，验证集只用于评估。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 2. model.train()
 
@@ -31,7 +30,6 @@ model.train()
 说明：
 
 `model.train()` 会打开 Dropout，并让 BatchNorm 使用当前 batch 统计。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 3. model.eval()
 
@@ -42,7 +40,6 @@ model.eval()
 说明：
 
 `model.eval()` 会关闭 Dropout，并让 BatchNorm 使用 running statistics。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 4. with torch.no_grad():
 
@@ -53,7 +50,6 @@ with torch.no_grad():
 说明：
 
 验证代码通常写在 `with torch.no_grad():` 中，避免构建计算图。
-- 和梯度有关的写法要小心计算图是否被断开。用于打印日志时可以 `.item()`，但参与训练的张量不要过早转成 Python 数字。
 
 ### 5. random_split
 
@@ -70,14 +66,12 @@ random_split
 说明：
 
 每个 epoch 后记录 train loss、val loss、val accuracy，更容易发现过拟合。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 7. 概念和经验
 
 说明：
 
 训练 loss 降、验证 loss 升，通常是过拟合信号。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 8. optimizer.step()
 
@@ -88,14 +82,12 @@ optimizer.step()
 说明：
 
 验证时不要调用 `optimizer.step()`，也不要对验证 loss 做 backward。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 9. 概念和经验
 
 说明：
 
 如果使用 DataLoader，训练 loader 可 shuffle，验证 loader 不需要 shuffle。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 10. 概念和经验
 

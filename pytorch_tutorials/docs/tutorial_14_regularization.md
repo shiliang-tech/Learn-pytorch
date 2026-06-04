@@ -35,7 +35,6 @@ nn.Dropout(p=0.5)
 说明：
 
 Dropout 放在隐藏层后更常见，通常不放在最终输出 logits 后。
-- 分类任务要分清 logits 和概率。大多数 PyTorch loss 直接接收 logits，只有推理或展示结果时才需要 sigmoid/softmax。
 
 ### 4. model.train()
 

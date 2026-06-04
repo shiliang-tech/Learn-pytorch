@@ -39,7 +39,6 @@ map_location='cpu'
 说明：
 
 `map_location='cpu'` 可以把 GPU 保存的参数加载到 CPU。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 ### 4. model.eval()
 
@@ -50,14 +49,12 @@ model.eval()
 说明：
 
 推理前调用 `model.eval()`，保证 Dropout/BatchNorm 行为正确。
-- 数据管道的重点是第 0 维样本数一致。进入训练循环后，每个 batch 都应该能直接喂给模型。
 
 ### 5. 概念和经验
 
 说明：
 
 如果还要恢复训练，应同时保存 optimizer state、epoch、best metric。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 6. 常用写法
 
@@ -68,7 +65,6 @@ model.eval()
 说明：
 
 checkpoint 常见结构：`{'model': model.state_dict(), 'optimizer': opt.state_dict(), 'epoch': epoch}`。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 7. strict=False
 

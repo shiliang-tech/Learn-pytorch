@@ -20,7 +20,6 @@
 说明：
 
 PyTorch 卷积输入是 `[N, C, H, W]`，不是 `[N, H, W, C]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 2. 常用写法
 
@@ -31,7 +30,6 @@ nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0)
 说明：
 
 `nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0)` 是基本写法。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 3. out_channels
 
@@ -92,7 +90,6 @@ nn.Flatten()
 说明：
 
 进入 Linear 前用 `nn.Flatten()`，并确认 flatten 后维度。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 9. 概念和经验
 
@@ -105,7 +102,6 @@ nn.Flatten()
 说明：
 
 排查 CNN 第一件事：打印每层输出 shape。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 
 ## 本节任务

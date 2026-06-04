@@ -29,8 +29,6 @@ torch.tensor([[1, 2], [3, 4]], dtype=torch.float32)
 说明：
 
 `torch.tensor([[1, 2], [3, 4]], dtype=torch.float32)` 从 Python 列表创建张量，并指定浮点类型。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
 
 ### 3. torch.zeros(shape)
 
@@ -43,7 +41,6 @@ torch.full(shape, value)
 说明：
 
 `torch.zeros(shape)`、`torch.ones(shape)`、`torch.full(shape, value)` 分别创建全 0、全 1、指定值张量。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 4. torch.arange(start, end, step)
 
@@ -66,7 +63,6 @@ torch.rand(shape)
 说明：
 
 `torch.randn(shape)` 创建标准正态随机张量；`torch.rand(shape)` 创建 0 到 1 的均匀随机张量。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 6. x + y
 
@@ -92,7 +88,6 @@ x.shape[1] == w.shape[0]
 说明：
 
 `x @ w` 或 `torch.matmul(x, w)` 是矩阵乘法；二维时要求 `x.shape[1] == w.shape[0]`。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 8. x.T
 
@@ -117,7 +112,6 @@ x.numel()
 说明：
 
 `x.shape`、`x.ndim`、`x.numel()` 分别查看形状、维度数、元素总数。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 10. x.mean()
 
@@ -142,7 +136,6 @@ x.item()
 说明：
 
 `x.item()` 把只含一个元素的张量转成 Python 数字，常用于打印 loss。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 12. print(x, x.shape, x.dtype, x.device)
 
@@ -153,9 +146,6 @@ print(x, x.shape, x.dtype, x.device)
 说明：
 
 `print(x, x.shape, x.dtype, x.device)` 是排查 PyTorch 代码最朴素也最有效的方法。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
-- 同时注意 dtype：模型输入通常是浮点张量，分类标签通常是 `torch.long`，二分类 BCE 标签通常是浮点 0/1。
-- 如果代码要兼容 CPU/GPU，模型、输入、标签和新建临时张量都要放在同一个 device。
 
 
 ## 本节任务

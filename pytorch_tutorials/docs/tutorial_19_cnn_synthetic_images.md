@@ -19,7 +19,6 @@ Conv2d -> ReLU -> Pool -> Conv2d -> ReLU -> Pool -> Flatten -> Linear
 说明：
 
 典型 CNN 分类器：`Conv2d -> ReLU -> Pool -> Conv2d -> ReLU -> Pool -> Flatten -> Linear`。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 2. 概念和经验
 
@@ -52,14 +51,12 @@ channels * height * width
 说明：
 
 Flatten 后 Linear 输入维度等于 `channels * height * width`。
-- 涉及模型层时，把每一层都看成一次 shape 变换；不确定时在 forward 中临时打印中间结果 shape。
 
 ### 6. 概念和经验
 
 说明：
 
 如果不想手算维度，可以先跑一个 dummy input 打印 shape。
-- 写这类代码时，第一步先确认张量形状。PyTorch 的很多报错不是公式错了，而是某一维没有对齐。
 
 ### 7. 概念和经验
 

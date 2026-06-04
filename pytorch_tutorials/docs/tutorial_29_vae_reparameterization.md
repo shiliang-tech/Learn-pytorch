@@ -66,7 +66,6 @@ z = mu + std * eps
 说明：
 
 KL loss 让潜变量分布接近标准正态，常写成 `-0.5 * mean(1 + logvar - mu^2 - exp(logvar))`。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 7. recon_loss + beta * kl
 
@@ -77,7 +76,6 @@ recon_loss + beta * kl
 说明：
 
 总 loss 通常是 `recon_loss + beta * kl`，beta 可调节压缩/生成约束强度。
-- 训练时关注顺序：先前向得到输出，再算 loss，然后清空旧梯度、反向传播、更新参数。顺序乱了通常不会得到正确训练。
 
 ### 8. 概念和经验
 
